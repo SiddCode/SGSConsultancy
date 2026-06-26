@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SGS HR Blogs - Read current hiring trends in Chennai, recruitment tips, career advice, and workforce insights from consulting experts.">
+  <title>Insights & Blog | SGS HR Workforce Solutions</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .blog-card {
+      background-color: var(--white);
+      border-radius: var(--border-radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      transition: var(--transition-normal);
+      display: flex;
+      flex-direction: column;
+    }
+    .blog-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--frosted-blue-2);
+    }
+    .blog-image-container {
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+      position: relative;
+    }
+    .blog-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition-slow);
+    }
+    .blog-card:hover .blog-img {
+      transform: scale(1.05);
+    }
+    .blog-category-tag {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background-color: var(--french-blue);
+      color: var(--white);
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--border-radius-full);
+      font-size: 0.75rem;
+      font-weight: 600;
+      z-index: 2;
+    }
+    .blog-info {
+      padding: 1.75rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .blog-meta-data {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.8rem;
+      color: var(--text-gray);
+      margin-bottom: 0.75rem;
+    }
+    .blog-post-title {
+      font-size: 1.2rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.35;
+      color: var(--deep-twilight);
+    }
+    .blog-summary-text {
+      font-size: 0.9rem;
+      color: var(--text-gray);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .blog-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border-color);
+      padding-top: 1rem;
+      font-size: 0.85rem;
+      color: var(--text-dark);
+      font-weight: 500;
+    }
+    .blog-author {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .blog-author-avatar {
+      width: 1.75rem;
+      height: 1.75rem;
+      border-radius: var(--border-radius-full);
+      background-color: var(--light-cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: var(--deep-twilight);
+      font-weight: bold;
+    }
+
+    /* Modal dialog */
+    .blog-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10000;
+      background-color: rgba(3, 4, 94, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      backdrop-filter: blur(5px);
+    }
+    .blog-modal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .blog-modal-content {
+      background-color: var(--white);
+      width: 90%;
+      max-width: 800px;
+      max-height: 85vh;
+      border-radius: var(--border-radius-md);
+      box-shadow: var(--shadow-xl);
+      overflow-y: auto;
+      position: relative;
+      animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .blog-modal-close {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      width: 2.25rem;
+      height: 2.25rem;
+      background-color: var(--light-cyan);
+      color: var(--deep-twilight);
+      border-radius: var(--border-radius-full);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      cursor: pointer;
+      z-index: 10;
+      transition: var(--transition-fast);
+    }
+    .blog-modal-close:hover {
+      background-color: var(--frosted-blue-2);
+      transform: rotate(90deg);
+    }
+    .blog-modal-header {
+      padding: 3.5rem 3rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .blog-modal-meta {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.875rem;
+      color: var(--text-gray);
+      margin-bottom: 1rem;
+    }
+    .blog-modal-title {
+      font-size: 2rem;
+      line-height: 1.2;
+      color: var(--deep-twilight);
+    }
+    .blog-modal-body {
+      padding: 2.5rem 3rem 3.5rem;
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--text-dark);
+    }
+    .blog-modal-body h4 {
+      font-size: 1.35rem;
+      margin: 2rem 0 1rem;
+      color: var(--french-blue);
+    }
+    .blog-modal-body p {
+      margin-bottom: 1.25rem;
+    }
+
+    @keyframes modalSlideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+      .blog-modal-header {
+        padding: 3rem 1.5rem 1rem;
+      }
+      .blog-modal-body {
+        padding: 1.5rem 1.5rem 2.5rem;
+      }
+      .blog-modal-title {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Injected Header -->
+  <div id="site-header"></div>
+
+  <!-- Page Banner -->
+  <section class="page-banner">
+    <div class="container">
+      <h2 class="page-title">Workforce Insights & Blog</h2>
+      <div class="page-breadcrumbs">
+        <a href="index.html">Home</a> &gt; <span>Blog</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blog List Section -->
+  <section class="section">
+    <div class="container">
+      <div class="section-title-wrapper fade-in">
+        <span class="section-subtitle">Recruitment & Career Strategy</span>
+        <h2 class="section-title">Latest Articles</h2>
+        <p style="color: var(--text-gray);">
+          Stay up to date with hiring dynamics, market salaries, executive career advising, and recruitment trends.
+        </p>
+      </div>
+
+      <!-- Categories Filter Tabs -->
+      <div class="fade-in" style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 3.5rem; flex-wrap: wrap;">
+        <button class="btn btn-outline filter-btn active" data-category="all" style="padding: 0.5rem 1.25rem; font-size: 0.875rem;">All Insights</button>
+        <button class="btn btn-outline filter-btn" data-category="Hiring Trends" style="padding: 0.5rem 1.25rem; font-size: 0.875rem;">Hiring Trends</button>
+        <button class="btn btn-outline filter-btn" data-category="Career Tips" style="padding: 0.5rem 1.25rem; font-size: 0.875rem;">Career Tips</button>
+        <button class="btn btn-outline filter-btn" data-category="Recruitment Insights" style="padding: 0.5rem 1.25rem; font-size: 0.875rem;">Recruitment Insights</button>
+      </div>
+
+      <!-- Blogs Grid -->
+      <div id="blogs-container" class="card-grid fade-in" style="transition-delay: 0.1s;">
+        <!-- Loading Indicator -->
+        <p style="text-align: center; color: var(--text-gray); padding: 3rem 0; grid-column: 1 / -1;">Retrieving blog publications...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Detailed Blog Read Modal -->
+  <div id="blog-modal" class="blog-modal">
+    <div class="blog-modal-content">
+      <button class="blog-modal-close" id="modal-close-btn">&times;</button>
+      <div class="blog-modal-header">
+        <div class="blog-modal-meta">
+          <span id="modal-category" style="color: red; font-weight: bold; text-transform: uppercase; font-size: 1 rem; letter-spacing: 0.05em;"></span>
+          <span id="modal-date"></span>
+          <span id="modal-readtime"></span>
+        </div>
+        <h3 class="blog-modal-title" id="modal-title"></h3>
+      </div>
+      <div class="blog-modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Injected Footer -->
+  <div id="site-footer"></div>
+
+  <!-- JS Modules -->
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const blogsContainer = document.getElementById('blogs-container');
+      const filterButtons = document.querySelectorAll('.filter-btn');
+      const blogModal = document.getElementById('blog-modal');
+      const modalCloseBtn = document.getElementById('modal-close-btn');
+
+      // Modal Elements
+      const mCategory = document.getElementById('modal-category');
+      const mDate = document.getElementById('modal-date');
+      const mReadTime = document.getElementById('modal-readtime');
+      const mTitle = document.getElementById('modal-title');
+      const mBody = document.getElementById('modal-body');
+
+      let allBlogs = [];
+
+      // Fetch Blogs
+      try {
+        allBlogs = await API.getBlogs();
+        renderBlogs(allBlogs);
+      } catch (error) {
+        console.error('Failed to load blog posts:', error);
+        blogsContainer.innerHTML = '<p style="color: red; text-align: center; padding: 2rem 0; grid-column: 1 / -1;">Error retrieving blog lists. Please check server logs.</p>';
+      }
+
+      // Render blogs list
+      function renderBlogs(blogsList) {
+        if (!blogsList || blogsList.length === 0) {
+          blogsContainer.innerHTML = '<p style="text-align: center; color: var(--text-gray); padding: 3rem 0; grid-column: 1 / -1;">No articles published yet.</p>';
+          return;
+        }
+
+        blogsContainer.innerHTML = '';
+        blogsList.forEach(blog => {
+          const card = document.createElement('div');
+          card.className = 'blog-card';
+          card.setAttribute('data-cat', blog.category);
+          
+          const formattedDate = new Date(blog.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric', month: 'short', day: 'numeric'
+          });
+
+          card.innerHTML = `
+            <div class="blog-image-container">
+              <span class="blog-category-tag">${blog.category}</span>
+              <img src="${blog.image}" alt="${blog.title}" class="blog-img">
+            </div>
+            <div class="blog-info">
+              <div>
+                <div class="blog-meta-data">
+                  <span>📅 ${formattedDate}</span>
+                  <span>⏱️ ${blog.readTime}</span>
+                </div>
+                <h3 class="blog-post-title">${blog.title}</h3>
+                <p class="blog-summary-text">${blog.summary}</p>
+              </div>
+              <div class="blog-footer">
+                <div class="blog-author">
+                  <div class="blog-author-avatar">${blog.author.charAt(0)}</div>
+                  <span>${blog.author}</span>
+                </div>
+                <button class="read-blog-btn" data-id="${blog._id}" style="color: var(--french-blue); background: none; border: none; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.25rem;">
+                  Read More ➔
+                </button>
+              </div>
+            </div>
+          `;
+          blogsContainer.appendChild(card);
+        });
+
+        // Add Read More Click Handlers
+        document.querySelectorAll('.read-blog-btn').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const id = e.currentTarget.getAttribute('data-id');
+            const article = allBlogs.find(b => b._id === id) || await API.getBlogById(id);
+            
+            if (article) {
+              const articleDate = new Date(article.createdAt).toLocaleDateString('en-US', {
+                year: 'numeric', month: 'long', day: 'numeric'
+              });
+
+              mCategory.textContent = article.category;
+              mDate.textContent = `📅 ${articleDate}`;
+              mReadTime.textContent = `⏱️ ${article.readTime} (Author: ${article.author})`;
+              mTitle.textContent = article.title;
+              mBody.innerHTML = article.content;
+
+              // Open Modal
+              blogModal.classList.add('active');
+              document.body.style.overflow = 'hidden'; // Lock scroll
+            }
+          });
+        });
+      }
+
+      // Close Modal logic
+      function closeModal() {
+        blogModal.classList.remove('active');
+        document.body.style.overflow = ''; // Unlock scroll
+      }
+
+      modalCloseBtn.addEventListener('click', closeModal);
+      blogModal.addEventListener('click', (e) => {
+        if (e.target === blogModal) closeModal();
+      });
+
+      // Filter tabs event listeners
+      filterButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          filterButtons.forEach(b => b.classList.remove('active'));
+          e.currentTarget.classList.add('active');
+
+          const category = e.currentTarget.getAttribute('data-category');
+          if (category === 'all') {
+            renderBlogs(allBlogs);
+          } else {
+            const filtered = allBlogs.filter(b => b.category === category);
+            renderBlogs(filtered);
+          }
+        });
+      });
+
+    });
+  </script>
+</body>
+</html>

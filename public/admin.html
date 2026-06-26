@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | SGS HR Workforce Solutions</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+
+  <!-- ==========================================
+       LOGIN VIEW SECTION
+       ========================================== -->
+  <div id="login-view" class="login-wrapper">
+    <div class="login-card">
+      <div class="logo" style="margin-bottom: 2rem; justify-content: center;">
+        <div class="logo-icon">SGS</div>
+        <div>
+          <div style="color: antiquewhite;" class="logo-text">SGS HR</div>
+          <span class="logo-subtext">Workforce Solutions</span>
+        </div>
+      </div>
+      <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.35rem; color: var(--deep-twilight); margin-bottom: 1.5rem; text-align: center;">
+        Admin Portal Login
+      </h3>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" id="username" class="form-input" required placeholder="admin">
+        </div>
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" id="password" class="form-input" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 1rem;">
+          Authenticate Login
+        </button>
+      </form>
+      <div style="text-align: center; margin-top: 1.5rem;">
+        <a href="index.html" style="font-size: 0.85rem; color: var(--text-gray);">&larr; Back to Main Website</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       DASHBOARD VIEW SECTION
+       ========================================== -->
+  <div id="dashboard-view" class="admin-container" style="display: none;">
+    <!-- Sidebar Menu -->
+    <aside class="admin-sidebar">
+      <div>
+        <a href="index.html" class="logo" style="justify-content: flex-start;">
+          <div class="logo-icon" style="background: linear-gradient(135deg, var(--bright-teal-blue), var(--sky-aqua));">SGS</div>
+          <div>
+            <div class="logo-text" style="color: var(--white);">SGS HR</div>
+            <span class="logo-subtext" style="color: var(--frosted-blue);">Admin Control</span>
+          </div>
+        </a>
+
+        <div class="admin-sidebar-menu">
+          <div class="admin-menu-item active" data-tab="tab-inbox">
+            <span></span> Inbox Messages
+          </div>
+          <div class="admin-menu-item" data-tab="tab-candidates">
+            <span></span> Job Applications
+          </div>
+          <div class="admin-menu-item" data-tab="tab-jobs">
+            <span></span> Manage Jobs
+          </div>
+          <div class="admin-menu-item" data-tab="tab-blogs">
+            <span></span> Manage Blogs
+          </div>
+          <div class="admin-menu-item" data-tab="tab-settings">
+            <span></span> Portal Settings
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <button id="logout-btn" class="btn btn-secondary" style="width: 100%; border: whitesmoke; justify-content: center; background-color: rgba(255,255,255,0.1); color: #fff !important;">
+          Sign Out Dashboard
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="admin-main">
+      <header class="admin-header">
+        <div>
+          <h2 style="font-family: 'Outfit', sans-serif; font-size: 2rem; color: var(--deep-twilight);" id="panel-title">Inbox Messages</h2>
+          <p class="admin-title-desc" id="panel-desc">View and manage contact inquiries submitted through the website.</p>
+        </div>
+        <div style="font-family: 'Outfit', sans-serif; font-size: 0.9rem; color: var(--french-blue); font-weight: 600;">
+          Logged in as: <span id="admin-user-tag" style="color: var(--text-dark);">admin</span>
+        </div>
+      </header>
+
+      <!-- Dashboard Statistics Overview -->
+      <section class="admin-stats-grid">
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon"></div>
+          <div>
+            <div class="admin-stat-num" id="stat-inquiries">0</div>
+            <div class="admin-stat-label">Inbox Inquiries</div>
+          </div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon"></div>
+          <div>
+            <div class="admin-stat-num" id="stat-candidates">0</div>
+            <div class="admin-stat-label">Candidates Applied</div>
+          </div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon"></div>
+          <div>
+            <div class="admin-stat-num" id="stat-jobs">0</div>
+            <div class="admin-stat-label">Active Job Postings</div>
+          </div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon"></div>
+          <div>
+            <div class="admin-stat-num" id="stat-blogs">0</div>
+            <div class="admin-stat-label">Blog Articles</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           TAB PANELS
+           ========================================== -->
+
+      <!-- TAB 1: INBOX MESSAGES -->
+      <div id="tab-inbox" class="admin-panel active">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.25rem;">Contact Submissions</h3>
+            <button id="download-inbox-xl" class="btn btn-outline" style="padding: 0.4rem 1rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.35rem;">
+              <span>📊</span> Export Selected to Excel
+            </button>
+          </div>
+          <div class="table-wrapper">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th style="width: 40px; text-align: center;"><input type="checkbox" id="select-all-inbox"></th>
+                  <th>Date</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Subject</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="inbox-tbody">
+                <!-- Populate dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: CANDIDATE APPLICATIONS -->
+      <div id="tab-candidates" class="admin-panel">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.25rem;">Candidate Profiles</h3>
+            <button id="download-candidates-xl" class="btn btn-outline" style="padding: 0.4rem 1rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.35rem;">
+              <span>📊</span> Export Selected to Excel
+            </button>
+          </div>
+          <div class="table-wrapper">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th style="width: 40px; text-align: center;"><input type="checkbox" id="select-all-candidates"></th>
+                  <th>Applied On</th>
+                  <th>Name</th>
+                  <th>Contact Info</th>
+                  <th>Experience</th>
+                  <th>Applied For</th>
+                  <th>Resume</th>
+                </tr>
+              </thead>
+              <tbody id="candidates-tbody">
+                <!-- Populate dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: MANAGE JOBS (CRUD) -->
+      <div id="tab-jobs" class="admin-panel">
+        <div class="split-view-grid">
+          <!-- Job Form -->
+          <div class="admin-card">
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; margin-bottom: 1.5rem;" id="job-form-title">Post New Job Opening</h3>
+            <form id="job-form">
+              <input type="hidden" id="jobId" name="jobId">
+              
+              <div class="form-group">
+                <label for="jobTitle" class="form-label">Job Title *</label>
+                <input type="text" id="jobTitle" class="form-input" required placeholder="Senior Talent Advisor">
+              </div>
+
+              <div class="admin-form-row">
+                <div class="form-group">
+                  <label for="jobDepartment" class="form-label">Department *</label>
+                  <input type="text" id="jobDepartment" class="form-input" required placeholder="Strategic Hiring">
+                </div>
+                <div class="form-group">
+                  <label for="jobType" class="form-label">Job Type *</label>
+                  <select id="jobType" class="form-select" required>
+                    <option value="Full-time">Full-time</option>
+                    <option value="Part-time">Part-time</option>
+                    <option value="Contract">Contract</option>
+                    <option value="Internship">Internship</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="admin-form-row">
+                <div class="form-group">
+                  <label for="jobLocation" class="form-label">Location *</label>
+                  <input type="text" id="jobLocation" class="form-input" required placeholder="Chennai, TN">
+                </div>
+                <div class="form-group">
+                  <label for="jobExperience" class="form-label">Required Experience *</label>
+                  <input type="text" id="jobExperience" class="form-input" required placeholder="4 - 7 Years">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="jobSalary" class="form-label">Salary Details (Optional)</label>
+                <input type="text" id="jobSalary" class="form-input" placeholder="Best in Industry / Competitive">
+              </div>
+
+              <div class="form-group">
+                <label for="jobDesc" class="form-label">Brief Description *</label>
+                <textarea id="jobDesc" class="form-textarea" required placeholder="Summary of role responsibility..."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="jobRequirements" class="form-label">Requirements * <small>(One per line)</small></label>
+                <textarea id="jobRequirements" class="form-textarea" style="min-height: 100px;" required placeholder="Requirement 1&#10;Requirement 2&#10;Requirement 3"></textarea>
+              </div>
+
+              <div class="form-group" id="job-status-group" style="display: none;">
+                <label for="jobStatus" class="form-label">Job Status</label>
+                <select id="jobStatus" class="form-select">
+                  <option value="Open">Open</option>
+                  <option value="Closed">Closed</option>
+                </select>
+              </div>
+
+              <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary" id="job-submit-btn" style="flex: 1; justify-content: center;">Publish Opening</button>
+                <button type="button" class="btn btn-secondary" id="job-cancel-btn" style="display: none;">Cancel Edit</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Job List Table -->
+          <div class="admin-card">
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; margin-bottom: 1.5rem;">Published Job Openings</h3>
+            <div class="table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Job Title</th>
+                    <th>Dept</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="jobs-tbody">
+                  <!-- Populate dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: MANAGE BLOGS (CRUD) -->
+      <div id="tab-blogs" class="admin-panel">
+        <div class="split-view-grid">
+          <!-- Blog Form -->
+          <div class="admin-card">
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; margin-bottom: 1.5rem;" id="blog-form-title">Write Blog Post</h3>
+            <form id="blog-form">
+              <input type="hidden" id="blogId" name="blogId">
+
+              <div class="form-group">
+                <label for="blogTitle" class="form-label">Post Title *</label>
+                <input type="text" id="blogTitle" class="form-input" required placeholder="Navigating Career Pivots">
+              </div>
+
+              <div class="admin-form-row">
+                <div class="form-group">
+                  <label for="blogCategory" class="form-label">Category *</label>
+                  <select id="blogCategory" class="form-select" required>
+                    <option value="Hiring Trends">Hiring Trends</option>
+                    <option value="Career Tips">Career Tips</option>
+                    <option value="Recruitment Insights">Recruitment Insights</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="blogReadtime" class="form-label">Read Duration</label>
+                  <input type="text" id="blogReadtime" class="form-input" placeholder="5 min read">
+                </div>
+              </div>
+
+              <div class="form-group" style="display: flex; align-items: center; gap: 1.5rem;">
+                <div id="blog-image-preview-container" style="display: none; width: 80px; height: 80px; border: 1.5px solid var(--border-color); border-radius: var(--border-radius-sm); padding: 0.25rem; background-color: var(--bg-secondary); align-items: center; justify-content: center;">
+                  <img id="blog-image-preview-img" src="" alt="Blog Cover" style="max-width: 100%; max-height: 100%; object-fit: cover;">
+                </div>
+                <div style="flex-grow: 1;">
+                  <label for="blogImageFile" class="form-label">Cover Image File (PNG/JPG)</label>
+                  <input type="file" id="blogImageFile" class="form-input" accept="image/*">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="blogSummary" class="form-label">Short Summary *</label>
+                <input type="text" id="blogSummary" class="form-input" required placeholder="A brief summary of what this article discusses.">
+              </div>
+
+              <div class="form-group">
+                <label for="blogContent" class="form-label">Content Body * <small>(Supports HTML markup)</small></label>
+                <textarea id="blogContent" class="form-textarea" style="min-height: 250px;" required placeholder="<p>Write your article paragraphs here...</p>&#10;<h4>1. Heading</h4>&#10;<p>Another paragraph...</p>"></textarea>
+              </div>
+
+              <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary" id="blog-submit-btn" style="flex: 1; justify-content: center;">Publish Article</button>
+                <button type="button" class="btn btn-secondary" id="blog-cancel-btn" style="display: none;">Cancel Edit</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Blog List Table -->
+          <div class="admin-card">
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; margin-bottom: 1.5rem;">Published Articles</h3>
+            <div class="table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="blogs-tbody">
+                  <!-- Populate dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: PORTAL SETTINGS -->
+      <div id="tab-settings" class="admin-panel">
+        <div class="admin-card" style="max-width: 600px;">
+          <div class="admin-card-header">
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.25rem;">Website Configuration</h3>
+          </div>
+          <form id="settings-form">
+            <div class="form-group">
+              <label for="settingsPhone" class="form-label">Corporate Contact Phone (e.g. 99405 43980)</label>
+              <input type="text" id="settingsPhone" class="form-input" required placeholder="99405 43980">
+            </div>
+            
+            <div class="form-group">
+              <label for="settingsEmail" class="form-label">Corporate Contact Email (Editable)</label>
+              <input type="email" id="settingsEmail" class="form-input" required placeholder="info@sgshr.com">
+            </div>
+
+            <div class="form-group">
+              <label for="settingsLinkedin" class="form-label">LinkedIn Corporate Page URL (Editable)</label>
+              <input type="url" id="settingsLinkedin" class="form-input" required placeholder="https://linkedin.com/company/sgs-hr">
+            </div>
+
+            <div class="form-group" style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem;">
+              <div id="logo-preview-container" style="display: none; width: 80px; height: 80px; border: 1.5px solid var(--border-color); border-radius: var(--border-radius-sm); padding: 0.25rem; background-color: var(--bg-secondary); align-items: center; justify-content: center;">
+                <img id="logo-preview-img" src="" alt="Current Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+              </div>
+              <div style="flex-grow: 1;">
+                <label for="settingsLogoFile" class="form-label">Corporate Logo Image (Optional upload)</label>
+                <input type="file" id="settingsLogoFile" class="form-input" accept="image/*">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">
+              Save Settings Configuration
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Detail Inquiry View Modal -->
+  <div id="inquiry-modal" class="blog-modal">
+    <div class="blog-modal-content" style="max-width: 600px;">
+      <button class="blog-modal-close" id="inquiry-modal-close">&times;</button>
+      <div class="blog-modal-header" style="padding-top: 2.5rem;">
+        <h3 class="blog-modal-title" style="font-size: 1.35rem;" id="inquiry-modal-subject">Inquiry Subject</h3>
+      </div>
+      <div class="blog-modal-body" style="padding-top: 1.5rem; font-size: 0.95rem;">
+        <div style="background-color: var(--bg-secondary); padding: 1.25rem; border-radius: var(--border-radius-sm); margin-bottom: 1.5rem;">
+          <p><strong>From:</strong> <span id="inquiry-modal-name"></span></p>
+          <p><strong>Email:</strong> <span id="inquiry-modal-email"></span></p>
+          <p><strong>Phone:</strong> <span id="inquiry-modal-phone"></span></p>
+          <p><strong>Submitted At:</strong> <span id="inquiry-modal-date"></span></p>
+        </div>
+        <p><strong>Message:</strong></p>
+        <p id="inquiry-modal-message" style="white-space: pre-wrap; margin-top: 0.5rem; border-left: 3px solid var(--bright-teal-blue); padding-left: 1rem; color: #334155;"></p>
+        
+        <div style="margin-top: 2.5rem; display: flex; gap: 1rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+          <button class="btn btn-primary btn-action-status" data-status="Replied" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Mark as Replied</button>
+          <button class="btn btn-secondary btn-action-status" data-status="Read" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Mark as Read</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS Modules -->
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
