@@ -67,6 +67,7 @@ function renderHeader(settings) {
           <span class="hamburger-line"></span>
         </button>
       </div>
+      <div class="nav-overlay" id="nav-overlay"></div>
     </header>
   `;
 }
@@ -181,13 +182,25 @@ function highlightActiveMenu() {
 function initMobileMenu() {
   const hamburger = document.getElementById('hamburger-menu');
   const navMenu = document.getElementById('nav-menu');
+  const overlay = document.getElementById('nav-overlay');
 
   if (!hamburger || !navMenu) return;
 
   hamburger.addEventListener('click', () => {
     hamburger.classList.toggle('active');
     navMenu.classList.toggle('active');
+    if (overlay) overlay.classList.toggle('active');
+    document.body.classList.toggle('no-scroll');
   });
+
+  if (overlay) {
+    overlay.addEventListener('click', () => {
+      hamburger.classList.remove('active');
+      navMenu.classList.remove('active');
+      overlay.classList.remove('active');
+      document.body.classList.remove('no-scroll');
+    });
+  }
 
   // Close menu when links are clicked
   const navLinks = document.querySelectorAll('.nav-link');
@@ -195,6 +208,8 @@ function initMobileMenu() {
     link.addEventListener('click', () => {
       hamburger.classList.remove('active');
       navMenu.classList.remove('active');
+      if (overlay) overlay.classList.remove('active');
+      document.body.classList.remove('no-scroll');
     });
   });
 }

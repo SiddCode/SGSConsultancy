@@ -2,6 +2,7 @@
 
 :root {
   /* Design system custom colors */
+  --white: #ffffff;
   --deep-twilight: #03045e;
   --french-blue: #023e8a;
   --bright-teal-blue: #0077b6;
@@ -103,10 +104,9 @@ img {
 /* Global Grid System */
 .container {
   color: #fff !important;
-  width: 100%;
+  width: 90%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1.5rem;
 }
 
 .section {
@@ -402,10 +402,70 @@ img {
   transform: translateY(0);
 }
 
+/* Navigation Overlay & Scroll Lock */
+.nav-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(3, 4, 94, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: var(--transition-normal);
+}
+
+.nav-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body.no-scroll {
+  overflow: hidden;
+}
+
+/* Responsive Grid Components */
+.grid-2-story {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+.grid-2-vision {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
+
+.grid-2-founder {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.grid-2-choose {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 4rem;
+  align-items: center;
+}
+
 /* Media Queries for Mobile Responsiveness */
 @media (max-width: 992px) {
   .footer-grid {
     grid-template-columns: 1fr 1fr;
+  }
+  .grid-2-story,
+  .grid-2-vision,
+  .grid-2-founder,
+  .grid-2-choose {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    align-items: stretch;
   }
 }
 
@@ -420,30 +480,41 @@ img {
   
   .hamburger {
     display: block;
+    z-index: 1002;
   }
   
   .nav {
     position: fixed;
-    top: 4.5rem;
-    left: -100%;
-    width: 100%;
-    height: calc(100vh - 4.5rem);
+    top: 0;
+    right: -300px;
+    left: auto;
+    width: 300px;
+    height: 100vh;
     background-color: var(--white);
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     justify-content: flex-start;
-    padding-top: 3rem;
-    gap: 2.5rem;
+    padding: 6rem 2rem 2rem;
+    gap: 2rem;
     transition: var(--transition-normal);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-xl);
+    z-index: 1001;
   }
   
   .nav.active {
-    left: 0;
+    right: 0;
+    left: auto;
   }
   
   .nav-link {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
+    width: 100%;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .nav-link::after {
+    display: none;
   }
   
   .hamburger.active .hamburger-line:nth-child(1) {

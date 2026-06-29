@@ -140,6 +140,9 @@
 }
 
 .hero-image {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-xl);
   border: 4px solid var(--white);
