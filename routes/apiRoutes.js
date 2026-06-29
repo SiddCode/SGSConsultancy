@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const path = require('path');
 const multer = require('multer');
 const { uploadResume } = require('../middleware/upload');
 
@@ -137,13 +138,18 @@ router.post('/candidates/register', (req, res) => {
     }
 
     try {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const filename = 'resume-' + uniqueSuffix + path.extname(req.file.originalname);
+
       const newCandidate = new Candidate({
         name,
         email,
         phone,
         experience,
         appliedFor: appliedFor || 'General Registration',
-        resumePath: `/uploads/resumes/${req.file.filename}`,
+        resumePath: `/uploads/resumes/${filename}`,
+        resumeData: req.file.buffer.toString('base64'),
+        resumeContentType: req.file.mimetype,
         coverLetter: coverLetter || ''
       });
 

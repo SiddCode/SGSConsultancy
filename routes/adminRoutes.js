@@ -41,14 +41,18 @@ router.post('/settings', (req, res) => {
 
       const updateData = { email, linkedinUrl, phone };
 
-      // Handle logo upload
+      // Handle logo upload — convert buffer to Base64 Data URI
       if (req.files && req.files['logo'] && req.files['logo'][0]) {
-        updateData.logoPath = `/uploads/images/${req.files['logo'][0].filename}`;
+        const logoFile = req.files['logo'][0];
+        const base64 = logoFile.buffer.toString('base64');
+        updateData.logoPath = `data:${logoFile.mimetype};base64,${base64}`;
       }
 
-      // Handle founder photo upload
+      // Handle founder photo upload — convert buffer to Base64 Data URI
       if (req.files && req.files['founderPhoto'] && req.files['founderPhoto'][0]) {
-        updateData.founderPhotoPath = `/uploads/images/${req.files['founderPhoto'][0].filename}`;
+        const founderFile = req.files['founderPhoto'][0];
+        const base64 = founderFile.buffer.toString('base64');
+        updateData.founderPhotoPath = `data:${founderFile.mimetype};base64,${base64}`;
       }
 
       if (settings) {
@@ -177,8 +181,10 @@ router.post('/blogs', (req, res) => {
         readTime: readTime || '5 min read'
       };
 
+      // Convert uploaded image buffer to Base64 Data URI
       if (req.file) {
-        blogData.image = `/uploads/images/${req.file.filename}`;
+        const base64 = req.file.buffer.toString('base64');
+        blogData.image = `data:${req.file.mimetype};base64,${base64}`;
       } else {
         blogData.image = 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&auto=format&fit=crop';
       }
@@ -216,8 +222,10 @@ router.put('/blogs/:id', (req, res) => {
       blog.author = author || blog.author;
       blog.readTime = readTime || blog.readTime;
       
+      // Convert uploaded image buffer to Base64 Data URI
       if (req.file) {
-        blog.image = `/uploads/images/${req.file.filename}`;
+        const base64 = req.file.buffer.toString('base64');
+        blog.image = `data:${req.file.mimetype};base64,${base64}`;
       }
 
       await blog.save();
@@ -300,26 +308,48 @@ router.get('/candidates', async (req, res) => {
   }
 });
 
-// @route   GET /api/admin/resumes/download/:filename
-// @desc    Download candidate resume securely
-router.get('/resumes/download/:filename', (req, res) => {
-  const filename = req.params.filename;
-  // Security check: prevent directory traversal
-  if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
-    return res.status(400).json({ msg: 'Access denied: invalid file path' });
-  }
+// @route   GET /api/admin/resumes/download/:id
+// @desc    Download candidate resume — served from DB (Base64) with fallback to disk
+router.get('/resumes/download/:id', async (req, res) => {
+  try {
+    const candidate = await Candidate.findById(req.params.id);
+    if (!candidate) {
+      return res.status(404).json({ msg: 'Candidate not found' });
+    }
 
-  const filePath = path.join(__dirname, '../public/uploads/resumes', filename);
+    // Primary: serve from Base64 stored in MongoDB
+    if (candidate.resumeData && candidate.resumeContentType) {
+      const buffer = Buffer.from(candidate.resumeData, 'base64');
+      const ext = candidate.resumeContentType === 'application/pdf' ? '.pdf'
+        : candidate.resumeContentType === 'application/msword' ? '.doc'
+        : '.docx';
+      const downloadName = `resume-${candidate.name.replace(/\s+/g, '_')}${ext}`;
+      res.set('Content-Type', candidate.resumeContentType);
+      res.set('Content-Disposition', `attachment; filename="${downloadName}"`);
+      return res.send(buffer);
+    }
 
-  if (fs.existsSync(filePath)) {
-    res.download(filePath, (err) => {
-      if (err) {
-        console.error('Error during file transfer:', err);
-        res.status(500).send('Could not download the file.');
+    // Fallback: serve from local filesystem (for legacy records)
+    if (candidate.resumePath) {
+      const filename = path.basename(candidate.resumePath);
+      if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
+        return res.status(400).json({ msg: 'Access denied: invalid file path' });
       }
-    });
-  } else {
-    res.status(404).json({ msg: 'File not found on server' });
+      const filePath = path.join(__dirname, '../public/uploads/resumes', filename);
+      if (fs.existsSync(filePath)) {
+        return res.download(filePath, (err) => {
+          if (err) {
+            console.error('Error during file transfer:', err);
+            res.status(500).send('Could not download the file.');
+          }
+        });
+      }
+    }
+
+    return res.status(404).json({ msg: 'Resume file not found' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
   }
 });
 

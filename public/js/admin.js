@@ -304,9 +304,8 @@ document.addEventListener('DOMContentLoaded', () => {
           month: 'short', day: 'numeric', year: 'numeric'
         });
 
-        // Split download route using auth query param
-        const filename = candidate.resumePath.split('/').pop();
-        const dlUrl = `/api/admin/resumes/download/${filename}?token=${token}`;
+        // Download resume via DB lookup by candidate ID
+        const dlUrl = `/api/admin/resumes/download/${candidate._id}?token=${token}`;
 
         tr.innerHTML = `
           <td style="text-align: center;"><input type="checkbox" class="candidate-select" data-id="${candidate._id}"></td>

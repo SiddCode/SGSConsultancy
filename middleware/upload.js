@@ -1,39 +1,8 @@
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
 
-// Ensure directories exist
-const resumeDir = path.join(__dirname, '../public/uploads/resumes');
-if (!fs.existsSync(resumeDir)) {
-  fs.mkdirSync(resumeDir, { recursive: true });
-}
-
-const imageDir = path.join(__dirname, '../public/uploads/images');
-if (!fs.existsSync(imageDir)) {
-  fs.mkdirSync(imageDir, { recursive: true });
-}
-
-// Storage for Resumes
-const resumeStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, resumeDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'resume-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
-// Storage for Images
-const imageStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, imageDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'image-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+// Memory storage for serverless support (Vercel)
+const storage = multer.memoryStorage();
 
 // Resume Filter
 const resumeFilter = (req, file, cb) => {
@@ -61,7 +30,7 @@ const imageFilter = (req, file, cb) => {
 
 // Multer instances
 const uploadResume = multer({
-  storage: resumeStorage,
+  storage: storage,
   fileFilter: resumeFilter,
   limits: {
     fileSize: 10 * 1024 * 1024 // 10MB limit
@@ -69,7 +38,7 @@ const uploadResume = multer({
 });
 
 const uploadImage = multer({
-  storage: imageStorage,
+  storage: storage,
   fileFilter: imageFilter,
   limits: {
     fileSize: 5 * 1024 * 1024 // 5MB limit

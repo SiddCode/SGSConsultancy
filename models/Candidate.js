@@ -30,6 +30,14 @@ const CandidateSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  resumeData: {
+    type: String,
+    required: true
+  },
+  resumeContentType: {
+    type: String,
+    required: true
+  },
   coverLetter: {
     type: String,
     trim: true
