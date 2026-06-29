@@ -12,7 +12,7 @@ const Blog = require('./models/Blog');
 
 const app = express();
 
-// CORS — allow all origins (works for both local dev and Vercel)
+// CORS — allow all origins
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -20,25 +20,24 @@ app.use(cors({
 }));
 
 // Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Serve static assets from public directory
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Connect DB on each cold-start (cached after first connection)
-connectDB().catch((err) => {
-  console.error('Database connection failed on startup:', err.message);
-});
 
 // Define Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api', require('./routes/apiRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 
+// Health check endpoint (Render pings this to keep service alive)
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Fallback: serve index.html for unknown paths (multi-page site)
 app.get('*', (req, res, next) => {
-  // If request is for an API, pass to next handler (404)
   if (req.url.startsWith('/api')) {
     return next();
   }
@@ -59,25 +58,25 @@ const seedDatabase = async () => {
     // 1. Seed Settings if empty
     const settingsCount = await Setting.countDocuments();
     if (settingsCount === 0 && data.settings) {
-      console.log('Seeding settings database from db.json...');
+      console.log('Seeding settings...');
       await Setting.create(data.settings);
-      console.log('Settings database seeded successfully!');
+      console.log('Settings seeded.');
     }
 
     // 2. Seed Jobs if empty
     const jobsCount = await Job.countDocuments();
     if (jobsCount === 0 && data.jobs && data.jobs.length > 0) {
-      console.log('Seeding jobs database from db.json...');
+      console.log('Seeding jobs...');
       await Job.create(data.jobs);
-      console.log('Jobs database seeded successfully!');
+      console.log('Jobs seeded.');
     }
 
     // 3. Seed Blogs if empty
     const blogsCount = await Blog.countDocuments();
     if (blogsCount === 0 && data.blogs && data.blogs.length > 0) {
-      console.log('Seeding blogs database from db.json...');
+      console.log('Seeding blogs...');
       await Blog.create(data.blogs);
-      console.log('Blogs database seeded successfully!');
+      console.log('Blogs seeded.');
     }
 
   } catch (error) {
@@ -85,14 +84,20 @@ const seedDatabase = async () => {
   }
 };
 
-// Only start HTTP server in local development (not on Vercel serverless)
-if (process.env.VERCEL !== '1') {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, async () => {
-    console.log(`Server started on port ${PORT}`);
+// Start server — works on Render, local dev, and any traditional host
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, async () => {
+  console.log(`Server started on port ${PORT}`);
+  console.log(`MONGODB_URI set: ${!!process.env.MONGODB_URI}`);
+  try {
+    await connectDB();
     await seedDatabase();
-  });
-}
+    console.log('Database ready.');
+  } catch (err) {
+    console.error('FATAL: Could not connect to MongoDB:', err.message);
+    console.error('Ensure MONGODB_URI environment variable is set to a valid MongoDB Atlas URI.');
+  }
+});
 
-// Export app for Vercel serverless handler
+// Export app (for any serverless adapter if needed)
 module.exports = app;

@@ -3,6 +3,7 @@ const router = express.Router();
 const path = require('path');
 const fs = require('fs');
 const auth = require('../middleware/auth');
+const dbGuard = require('../middleware/dbGuard');
 const { uploadImage } = require('../middleware/upload');
 
 // Models
@@ -12,8 +13,9 @@ const Blog = require('../models/Blog');
 const Contact = require('../models/Contact');
 const Candidate = require('../models/Candidate');
 
-// Apply auth middleware to all admin routes
+// Apply auth then DB guard to all admin routes
 router.use(auth);
+router.use(dbGuard);
 
 // ==========================================
 // Settings Management

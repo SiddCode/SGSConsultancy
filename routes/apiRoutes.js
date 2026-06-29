@@ -3,6 +3,10 @@ const router = express.Router();
 const path = require('path');
 const multer = require('multer');
 const { uploadResume } = require('../middleware/upload');
+const dbGuard = require('../middleware/dbGuard');
+
+// Ensure DB is connected before any route handler runs
+router.use(dbGuard);
 
 // Models
 const Setting = require('../models/Setting');
