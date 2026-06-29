@@ -18,20 +18,20 @@ const Candidate = require('../models/Candidate');
 // @route   GET /api/settings
 // @desc    Get website contact settings
 router.get('/settings', async (req, res) => {
+  const fallback = {
+    email: 'info@sgshrworkforce.com',
+    linkedinUrl: 'https://linkedin.com',
+    phone: '99405 43980',
+    logoPath: '',
+    founderPhotoPath: ''
+  };
+
   try {
-    let settings = await Setting.findOne();
-    if (!settings) {
-      // Fallback configuration if DB not seeded
-      settings = {
-        email: 'info@sgshrworkforce.com',
-        linkedinUrl: 'https://linkedin.com',
-        phone: '99405 43980'
-      };
-    }
-    res.json(settings);
+    const settings = await Setting.findOne();
+    res.json(settings || fallback);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    console.error('Settings fetch error:', err.message);
+    res.json(fallback);
   }
 });
 
@@ -42,8 +42,8 @@ router.get('/jobs', async (req, res) => {
     const jobs = await Job.find({ status: 'Open' }).sort({ createdAt: -1 });
     res.json(jobs);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    console.error('Jobs fetch error:', err.message);
+    res.json([]);
   }
 });
 
@@ -57,11 +57,11 @@ router.get('/jobs/:id', async (req, res) => {
     }
     res.json(job);
   } catch (err) {
-    console.error(err.message);
+    console.error('Job detail error:', err.message);
     if (err.kind === 'ObjectId') {
       return res.status(404).json({ msg: 'Job not found' });
     }
-    res.status(500).send('Server Error');
+    res.status(500).json({ msg: 'Server error loading job details' });
   }
 });
 
@@ -72,8 +72,8 @@ router.get('/blogs', async (req, res) => {
     const blogs = await Blog.find().sort({ createdAt: -1 });
     res.json(blogs);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    console.error('Blogs fetch error:', err.message);
+    res.json([]);
   }
 });
 
@@ -87,11 +87,11 @@ router.get('/blogs/:id', async (req, res) => {
     }
     res.json(blog);
   } catch (err) {
-    console.error(err.message);
+    console.error('Blog detail error:', err.message);
     if (err.kind === 'ObjectId') {
       return res.status(404).json({ msg: 'Blog post not found' });
     }
-    res.status(500).send('Server Error');
+    res.status(500).json({ msg: 'Server error loading blog post' });
   }
 });
 
@@ -101,28 +101,21 @@ router.post('/contact', async (req, res) => {
   const { name, email, phone, subject, message } = req.body;
 
   if (!name || !email || !phone || !subject || !message) {
-    return res.status(400).json({ msg: 'Please enter all fields' });
+    return res.status(400).json({ msg: 'Please fill in all required fields' });
   }
 
   try {
-    const newContact = new Contact({
-      name,
-      email,
-      phone,
-      subject,
-      message
-    });
-
+    const newContact = new Contact({ name, email, phone, subject, message });
     await newContact.save();
     res.json({ msg: 'Thank you! Your message has been received successfully.' });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    console.error('Contact save error:', err.message);
+    res.status(500).json({ msg: 'Failed to save your message. Please try again.' });
   }
 });
 
 // @route   POST /api/candidates/register
-// @desc    Candidate registration / application with resume file upload
+// @desc    Candidate registration with resume upload
 router.post('/candidates/register', (req, res) => {
   uploadResume.single('resume')(req, res, async function (err) {
     if (err instanceof multer.MulterError) {
@@ -160,8 +153,8 @@ router.post('/candidates/register', (req, res) => {
       await newCandidate.save();
       res.json({ msg: 'Application submitted successfully! Our team will contact you shortly.' });
     } catch (err) {
-      console.error(err.message);
-      res.status(500).send('Server Error');
+      console.error('Candidate save error:', err.message);
+      res.status(500).json({ msg: 'Failed to submit application. Please try again.' });
     }
   });
 });

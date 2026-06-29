@@ -3,30 +3,21 @@ const mongoose = require('mongoose');
 let isConnected = false;
 
 const connectDB = async () => {
+  // Already connected
   if (isConnected && mongoose.connection.readyState === 1) {
-    console.log('Using existing MongoDB connection');
     return;
   }
 
-  const uri = process.env.MONGODB_URI;
+  // Use MONGODB_URI env var, fall back to local for dev only
+  const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/sgs_hr';
 
-  if (!uri) {
-    throw new Error(
-      'MONGODB_URI is not set. Please add it to your Render environment variables. ' +
-      'Get a free Atlas URI at https://cloud.mongodb.com'
-    );
-  }
-
-  if (uri.includes('127.0.0.1') || uri.includes('localhost')) {
-    throw new Error(
-      'MONGODB_URI is set to localhost which does not work on Render. ' +
-      'Use a MongoDB Atlas connection string instead.'
-    );
+  if (!process.env.MONGODB_URI) {
+    console.warn('WARNING: MONGODB_URI not set. Using localhost (dev only). Set it in Render env vars for production.');
   }
 
   try {
     const conn = await mongoose.connect(uri, {
-      serverSelectionTimeoutMS: 10000,  // 10s timeout for Atlas
+      serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
     });
     isConnected = true;
