@@ -3,7 +3,6 @@ const router = express.Router();
 const path = require('path');
 const fs = require('fs');
 const auth = require('../middleware/auth');
-const dbGuard = require('../middleware/dbGuard');
 const { uploadImage } = require('../middleware/upload');
 
 // Models
@@ -13,9 +12,8 @@ const Blog = require('../models/Blog');
 const Contact = require('../models/Contact');
 const Candidate = require('../models/Candidate');
 
-// Apply auth then DB guard to all admin routes
+// Apply auth middleware to all admin routes
 router.use(auth);
-router.use(dbGuard);
 
 // ==========================================
 // Settings Management
@@ -32,7 +30,7 @@ router.post('/settings', (req, res) => {
       return res.status(400).json({ msg: err.message });
     }
 
-    const { email, linkedinUrl, phone } = req.body;
+    const { email, linkedinUrl, phone, location, founderName, founderBio } = req.body;
 
     if (!email || !linkedinUrl || !phone) {
       return res.status(400).json({ msg: 'Please provide email, linkedinUrl and phone' });
@@ -41,26 +39,25 @@ router.post('/settings', (req, res) => {
     try {
       let settings = await Setting.findOne();
 
-      const updateData = { email, linkedinUrl, phone };
+      const updateData = { email, linkedinUrl, phone, location, founderName, founderBio };
 
-      // Handle logo upload — convert buffer to Base64 Data URI
+      // Handle logo upload
       if (req.files && req.files['logo'] && req.files['logo'][0]) {
-        const logoFile = req.files['logo'][0];
-        const base64 = logoFile.buffer.toString('base64');
-        updateData.logoPath = `data:${logoFile.mimetype};base64,${base64}`;
+        updateData.logoPath = `/uploads/images/${req.files['logo'][0].filename}`;
       }
 
-      // Handle founder photo upload — convert buffer to Base64 Data URI
+      // Handle founder photo upload
       if (req.files && req.files['founderPhoto'] && req.files['founderPhoto'][0]) {
-        const founderFile = req.files['founderPhoto'][0];
-        const base64 = founderFile.buffer.toString('base64');
-        updateData.founderPhotoPath = `data:${founderFile.mimetype};base64,${base64}`;
+        updateData.founderPhotoPath = `/uploads/images/${req.files['founderPhoto'][0].filename}`;
       }
 
       if (settings) {
         settings.email = email;
         settings.linkedinUrl = linkedinUrl;
         settings.phone = phone;
+        settings.location = location || settings.location;
+        settings.founderName = founderName || settings.founderName;
+        settings.founderBio = founderBio || settings.founderBio;
         if (updateData.logoPath) settings.logoPath = updateData.logoPath;
         if (updateData.founderPhotoPath) settings.founderPhotoPath = updateData.founderPhotoPath;
         await settings.save();
@@ -183,10 +180,8 @@ router.post('/blogs', (req, res) => {
         readTime: readTime || '5 min read'
       };
 
-      // Convert uploaded image buffer to Base64 Data URI
       if (req.file) {
-        const base64 = req.file.buffer.toString('base64');
-        blogData.image = `data:${req.file.mimetype};base64,${base64}`;
+        blogData.image = `/uploads/images/${req.file.filename}`;
       } else {
         blogData.image = 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&auto=format&fit=crop';
       }
@@ -224,10 +219,8 @@ router.put('/blogs/:id', (req, res) => {
       blog.author = author || blog.author;
       blog.readTime = readTime || blog.readTime;
       
-      // Convert uploaded image buffer to Base64 Data URI
       if (req.file) {
-        const base64 = req.file.buffer.toString('base64');
-        blog.image = `data:${req.file.mimetype};base64,${base64}`;
+        blog.image = `/uploads/images/${req.file.filename}`;
       }
 
       await blog.save();
@@ -310,48 +303,26 @@ router.get('/candidates', async (req, res) => {
   }
 });
 
-// @route   GET /api/admin/resumes/download/:id
-// @desc    Download candidate resume — served from DB (Base64) with fallback to disk
-router.get('/resumes/download/:id', async (req, res) => {
-  try {
-    const candidate = await Candidate.findById(req.params.id);
-    if (!candidate) {
-      return res.status(404).json({ msg: 'Candidate not found' });
-    }
+// @route   GET /api/admin/resumes/download/:filename
+// @desc    Download candidate resume securely
+router.get('/resumes/download/:filename', (req, res) => {
+  const filename = req.params.filename;
+  // Security check: prevent directory traversal
+  if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
+    return res.status(400).json({ msg: 'Access denied: invalid file path' });
+  }
 
-    // Primary: serve from Base64 stored in MongoDB
-    if (candidate.resumeData && candidate.resumeContentType) {
-      const buffer = Buffer.from(candidate.resumeData, 'base64');
-      const ext = candidate.resumeContentType === 'application/pdf' ? '.pdf'
-        : candidate.resumeContentType === 'application/msword' ? '.doc'
-        : '.docx';
-      const downloadName = `resume-${candidate.name.replace(/\s+/g, '_')}${ext}`;
-      res.set('Content-Type', candidate.resumeContentType);
-      res.set('Content-Disposition', `attachment; filename="${downloadName}"`);
-      return res.send(buffer);
-    }
+  const filePath = path.join(__dirname, '../public/uploads/resumes', filename);
 
-    // Fallback: serve from local filesystem (for legacy records)
-    if (candidate.resumePath) {
-      const filename = path.basename(candidate.resumePath);
-      if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
-        return res.status(400).json({ msg: 'Access denied: invalid file path' });
+  if (fs.existsSync(filePath)) {
+    res.download(filePath, (err) => {
+      if (err) {
+        console.error('Error during file transfer:', err);
+        res.status(500).send('Could not download the file.');
       }
-      const filePath = path.join(__dirname, '../public/uploads/resumes', filename);
-      if (fs.existsSync(filePath)) {
-        return res.download(filePath, (err) => {
-          if (err) {
-            console.error('Error during file transfer:', err);
-            res.status(500).send('Could not download the file.');
-          }
-        });
-      }
-    }
-
-    return res.status(404).json({ msg: 'Resume file not found' });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    });
+  } else {
+    res.status(404).json({ msg: 'File not found on server' });
   }
 });
 

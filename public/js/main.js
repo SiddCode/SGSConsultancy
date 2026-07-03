@@ -130,7 +130,7 @@ function renderFooter(settings) {
             <ul class="footer-contact">
               <li>
                 <span class="footer-contact-icon">📍</span>
-                <span>Chennai, Tamil Nadu, India</span>
+                <span>${settings.location || 'Chennai, Tamil Nadu, India'}</span>
               </li>
               <li>
                 <span class="footer-contact-icon">📞</span>

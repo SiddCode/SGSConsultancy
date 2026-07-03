@@ -84,19 +84,21 @@
       <div class="fade-in">
         <span class="section-subtitle">Leadership Message</span>
         <h2 class="section-title" style="text-align: left; margin-bottom: 1.5rem;">Founder Profile</h2>
-        <p style="color: var(--text-gray); margin-bottom: 1.25rem; line-height: 1.8;">
-          At SGS HR Workforce Solutions, our leadership team brings decades of cumulative experience in recruitment, workforce strategy, and career coaching. Based in Chennai, we understand the local business nuances while maintaining a global perspective on talent trends.
-        </p>
-        <p style="color: var(--text-gray); margin-bottom: 1.5rem; line-height: 1.8;">
-          Under our leadership's strategic direction, we operate with a consultative methodology, helping startups, SMEs, and Fortune 500 corporates build resilient executive teams. We believe that recruitment is not a numbers game; it is an art of aligning professional vision with organizational goals.
-        </p>
+        <div id="founder-bio-container" style="margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
+          <p style="color: var(--text-gray); line-height: 1.8;">
+            At SGS HR Workforce Solutions, our leadership team brings decades of cumulative experience in recruitment, workforce strategy, and career coaching. Based in Chennai, we understand the local business nuances while maintaining a global perspective on talent trends.
+          </p>
+          <p style="color: var(--text-gray); line-height: 1.8;">
+            Under our leadership's strategic direction, we operate with a consultative methodology, helping startups, SMEs, and Fortune 500 corporates build resilient executive teams. We believe that recruitment is not a numbers game; it is an art of aligning professional vision with organizational goals.
+          </p>
+        </div>
         <div style="border-left: 3px solid var(--bright-teal-blue); padding-left: 1.5rem; margin-bottom: 2rem;">
           <blockquote style="font-style: italic; color: var(--text-dark); font-size: 1.05rem;">
             "We are committed to delivering sustainable growth for our clients and career transformation for our candidates by building trust and working with complete transparency."
           </blockquote>
         </div>
         <div style="font-family: 'Outfit', sans-serif;">
-          <h4 style="font-size: 1.2rem; color: var(--deep-twilight); margin-bottom: 0.25rem;">Founder & Managing Partner</h4>
+          <h4 id="founder-profile-name" style="font-size: 1.2rem; color: var(--deep-twilight); margin-bottom: 0.25rem;">Founder & Managing Partner</h4>
           <p style="font-size: 0.875rem; color: var(--bright-teal-blue); font-weight: 600;">SGS HR Workforce Solutions</p>
         </div>
       </div>
@@ -112,5 +114,37 @@
   <!-- JS Modules -->
   <script src="js/api.js"></script>
   <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Dynamically load founder data from settings
+      try {
+        const settings = await API.getSettings();
+        if (settings) {
+          if (settings.founderPhotoPath) {
+            const founderImg = document.querySelector('.fade-in img[alt*="Founder"]');
+            if (founderImg) {
+              founderImg.src = settings.founderPhotoPath;
+            }
+          }
+          if (settings.founderName) {
+            const nameEl = document.getElementById('founder-profile-name');
+            if (nameEl) nameEl.textContent = settings.founderName;
+          }
+          if (settings.founderBio) {
+            const bioEl = document.getElementById('founder-bio-container');
+            if (bioEl) {
+              bioEl.innerHTML = settings.founderBio
+                .split('\n')
+                .filter(p => p.trim() !== '')
+                .map(p => `<p style="color: var(--text-gray); line-height: 1.8;">${p}</p>`)
+                .join('');
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Could not load founder data from settings:', e);
+      }
+    });
+  </script>
 </body>
 </html>

@@ -387,13 +387,38 @@
               <input type="url" id="settingsLinkedin" class="form-input" required placeholder="https://linkedin.com/company/sgs-hr">
             </div>
 
+            <div class="form-group">
+              <label for="settingsLocation" class="form-label">Corporate Location (e.g. Chennai, Tamil Nadu, India)</label>
+              <input type="text" id="settingsLocation" class="form-input" required placeholder="Chennai, Tamil Nadu, India">
+            </div>
+
+            <div class="form-group">
+              <label for="settingsFounderName" class="form-label">Founder Profile Title/Name</label>
+              <input type="text" id="settingsFounderName" class="form-input" required placeholder="Founder & Managing Partner">
+            </div>
+
+            <div class="form-group">
+              <label for="settingsFounderBio" class="form-label">Founder Biography Text</label>
+              <textarea id="settingsFounderBio" class="form-textarea" required placeholder="Founder bio description..." style="min-height: 120px;"></textarea>
+            </div>
+
             <div class="form-group" style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem;">
-              <div id="logo-preview-container" style="display: none; width: 80px; height: 80px; border: 1.5px solid var(--border-color); border-radius: var(--border-radius-sm); padding: 0.25rem; background-color: var(--bg-secondary); align-items: center; justify-content: center;">
+              <div id="logo-preview-container" style="display: none; width: 80px; height: 80px; border: 1.5px solid var(--border-color); border-radius: var(--border-radius-sm); padding: 0.25rem; background-color: var(--bg-secondary); align-items: center; justify-content: center; flex-shrink: 0;">
                 <img id="logo-preview-img" src="" alt="Current Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
               </div>
               <div style="flex-grow: 1;">
                 <label for="settingsLogoFile" class="form-label">Corporate Logo Image (Optional upload)</label>
                 <input type="file" id="settingsLogoFile" class="form-input" accept="image/*">
+              </div>
+            </div>
+
+            <div class="form-group" style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem;">
+              <div id="founder-photo-preview-container" style="display: none; width: 80px; height: 80px; border: 1.5px solid var(--border-color); border-radius: 50%; padding: 0.25rem; background-color: var(--bg-secondary); align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
+                <img id="founder-photo-preview-img" src="" alt="Founder Photo" style="width: 100%; height: 100%; object-fit: cover;">
+              </div>
+              <div style="flex-grow: 1;">
+                <label for="settingsFounderPhoto" class="form-label">Founder Profile Photo (Optional upload)</label>
+                <input type="file" id="settingsFounderPhoto" class="form-input" accept="image/*">
               </div>
             </div>
 

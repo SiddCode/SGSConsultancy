@@ -2,7 +2,10 @@
   "settings": {
     "email": "info@sgshr.com",
     "linkedinUrl": "https://linkedin.com/company/sgs-hr-workforce-solutions-temp",
-    "phone": "99405 43980"
+    "phone": "99405 43980",
+    "location": "Chennai, Tamil Nadu, India",
+    "founderName": "Founder & Managing Partner",
+    "founderBio": "At SGS HR Workforce Solutions, our leadership team brings decades of cumulative experience in recruitment, workforce strategy, and career coaching. Based in Chennai, we understand the local business nuances while maintaining a global perspective on talent trends.\n\nUnder our leadership's strategic direction, we operate with a consultative methodology, helping startups, SMEs, and Fortune 500 corporates build resilient executive teams. We believe that recruitment is not a numbers game; it is an art of aligning professional vision with organizational goals."
   },
   "jobs": [
     {

@@ -304,8 +304,9 @@ document.addEventListener('DOMContentLoaded', () => {
           month: 'short', day: 'numeric', year: 'numeric'
         });
 
-        // Download resume via DB lookup by candidate ID
-        const dlUrl = `/api/admin/resumes/download/${candidate._id}?token=${token}`;
+        // Split download route using auth query param
+        const filename = candidate.resumePath.split('/').pop();
+        const dlUrl = `/api/admin/resumes/download/${filename}?token=${token}`;
 
         tr.innerHTML = `
           <td style="text-align: center;"><input type="checkbox" class="candidate-select" data-id="${candidate._id}"></td>
@@ -634,6 +635,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('settingsPhone').value = settings.phone;
         document.getElementById('settingsEmail').value = settings.email;
         document.getElementById('settingsLinkedin').value = settings.linkedinUrl;
+        document.getElementById('settingsLocation').value = settings.location || 'Chennai, Tamil Nadu, India';
+        document.getElementById('settingsFounderName').value = settings.founderName || 'Founder & Managing Partner';
+        document.getElementById('settingsFounderBio').value = settings.founderBio || '';
 
         // Render logo preview
         const previewContainer = document.getElementById('logo-preview-container');
@@ -668,6 +672,9 @@ document.addEventListener('DOMContentLoaded', () => {
     formData.append('phone', document.getElementById('settingsPhone').value);
     formData.append('email', document.getElementById('settingsEmail').value);
     formData.append('linkedinUrl', document.getElementById('settingsLinkedin').value);
+    formData.append('location', document.getElementById('settingsLocation').value);
+    formData.append('founderName', document.getElementById('settingsFounderName').value);
+    formData.append('founderBio', document.getElementById('settingsFounderBio').value);
 
     const logoFile = document.getElementById('settingsLogoFile').files[0];
     if (logoFile) {

@@ -26,6 +26,21 @@ const SettingSchema = new mongoose.Schema({
     type: String,
     trim: true,
     default: ''
+  },
+  location: {
+    type: String,
+    trim: true,
+    default: 'Chennai, Tamil Nadu, India'
+  },
+  founderName: {
+    type: String,
+    trim: true,
+    default: 'Founder & Managing Partner'
+  },
+  founderBio: {
+    type: String,
+    trim: true,
+    default: ''
   }
 }, { timestamps: true });
 
