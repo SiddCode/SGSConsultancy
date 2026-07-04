@@ -165,7 +165,10 @@
 
               <div class="form-group">
                 <label for="resume" class="form-label">Upload Resume (PDF, Word) *</label>
-                <input type="file" id="resume" name="resume" class="form-input" accept=".pdf,.doc,.docx" required>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <input type="file" id="resume" name="resume" class="form-input" accept=".pdf,.doc,.docx" required style="flex: 1; padding: 0.5rem;">
+                  <span id="resume-file-name" style="color: var(--deep-twilight); font-weight: 500; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">No file chosen</span>
+                </div>
                 <small style="color: var(--text-gray); font-size: 0.75rem; display: block; margin-top: 0.25rem;">Max file size: 10MB (.pdf, .doc, .docx only)</small>
               </div>
 
@@ -191,6 +194,22 @@
   <!-- JS Modules -->
   <script src="js/api.js"></script>
   <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const resumeInput = document.getElementById('resume');
+      const resumeFileName = document.getElementById('resume-file-name');
+      
+      if (resumeInput && resumeFileName) {
+        resumeInput.addEventListener('change', function() {
+          if (this.files && this.files.length > 0) {
+            resumeFileName.textContent = this.files[0].name;
+          } else {
+            resumeFileName.textContent = 'No file chosen';
+          }
+        });
+      }
+    });
+  </script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       const jobsContainer = document.getElementById('jobs-container');

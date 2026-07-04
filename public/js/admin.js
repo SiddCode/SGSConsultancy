@@ -215,7 +215,10 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>${contact.subject}</td>
           <td><span class="badge-status ${statusClass}">${contact.status}</span></td>
           <td>
-            <button class="action-btn btn-action-view view-contact-btn" data-id="${contact._id}">View</button>
+            <div class="action-btn-group">
+              <button class="action-btn btn-action-view view-contact-btn" data-id="${contact._id}">View</button>
+              <button class="action-btn btn-action-delete delete-contact-btn" data-id="${contact._id}">Delete</button>
+            </div>
           </td>
         `;
         tbody.appendChild(tr);
@@ -237,6 +240,26 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Open Modal
             document.getElementById('inquiry-modal').classList.add('active');
+          }
+        });
+      });
+
+      // Bind Delete Message click
+      document.querySelectorAll('.delete-contact-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          if (!confirm('Are you sure you want to delete this message?')) return;
+          const id = btn.getAttribute('data-id');
+          try {
+            const response = await authFetch(`/api/admin/contacts/${id}`, { method: 'DELETE' });
+            if (response.ok) {
+              window.showToast('Message deleted successfully', 'success');
+              loadInboxData();
+              loadDashboardStats();
+            } else {
+              window.showToast('Failed to delete message', 'error');
+            }
+          } catch (error) {
+            window.showToast('Error deleting message', 'error');
           }
         });
       });
@@ -316,10 +339,33 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>${candidate.experience}</td>
           <td><span class="job-badge" style="background-color: var(--frosted-blue-2); color: var(--deep-twilight);">${candidate.appliedFor}</span></td>
           <td>
-            <a href="${dlUrl}" class="action-btn btn-action-view" download style="text-align: center; display: inline-block;">Download CV</a>
+            <div class="action-btn-group" style="justify-content: center;">
+              <a href="${dlUrl}" class="action-btn btn-action-view" download style="text-align: center; display: inline-block;">Download CV</a>
+              <button class="action-btn btn-action-delete delete-candidate-btn" data-id="${candidate._id}">Delete</button>
+            </div>
           </td>
         `;
         tbody.appendChild(tr);
+      });
+
+      // Bind Delete Candidate click
+      document.querySelectorAll('.delete-candidate-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          if (!confirm('Are you sure you want to delete this candidate application?')) return;
+          const id = btn.getAttribute('data-id');
+          try {
+            const response = await authFetch(`/api/admin/candidates/${id}`, { method: 'DELETE' });
+            if (response.ok) {
+              window.showToast('Candidate application deleted successfully', 'success');
+              loadCandidatesData();
+              loadDashboardStats();
+            } else {
+              window.showToast('Failed to delete candidate application', 'error');
+            }
+          } catch (error) {
+            window.showToast('Error deleting candidate application', 'error');
+          }
+        });
       });
     } catch (err) {
       tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Failed to retrieve candidate profiles.</td></tr>';

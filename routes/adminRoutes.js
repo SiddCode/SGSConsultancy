@@ -326,4 +326,45 @@ router.get('/resumes/download/:filename', (req, res) => {
   }
 });
 
+// @route   DELETE /api/admin/contacts/:id
+// @desc    Delete a contact message
+router.delete('/contacts/:id', async (req, res) => {
+  try {
+    const contact = await Contact.findById(req.params.id);
+    if (!contact) {
+      return res.status(404).json({ msg: 'Contact message not found' });
+    }
+    await Contact.deleteOne({ _id: req.params.id });
+    res.json({ msg: 'Contact message deleted successfully' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// @route   DELETE /api/admin/candidates/:id
+// @desc    Delete a candidate profile and resume
+router.delete('/candidates/:id', async (req, res) => {
+  try {
+    const candidate = await Candidate.findById(req.params.id);
+    if (!candidate) {
+      return res.status(404).json({ msg: 'Candidate not found' });
+    }
+    
+    if (candidate.resumePath) {
+      const filename = candidate.resumePath.split('/').pop();
+      const filePath = path.join(__dirname, '../public/uploads/resumes', filename);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
+    await Candidate.deleteOne({ _id: req.params.id });
+    res.json({ msg: 'Candidate application deleted successfully' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 module.exports = router;
