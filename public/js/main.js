@@ -83,7 +83,9 @@ function renderFooter(settings) {
         <div class="footer-grid">
           <div class="footer-col">
             <a href="index.html" class="logo footer-logo">
-              <div class="logo-icon">SGS</div>
+              ${settings && settings.logoPath
+                ? `<img src="${settings.logoPath}" alt="SGS HR Logo" style="max-height: 2.75rem; width: auto; object-fit: contain; margin-right: 0.75rem; border-radius: 4px;">`
+                : `<div class="logo-icon">SGS</div>`}
               <div>
                 <div class="logo-text">SGS HR</div>
                 <span class="logo-subtext">Workforce Solutions</span>
