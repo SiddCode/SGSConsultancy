@@ -120,12 +120,7 @@
       try {
         const settings = await API.getSettings();
         if (settings) {
-          if (settings.founderPhotoPath) {
-            const founderImg = document.querySelector('.fade-in img[alt*="Founder"]');
-            if (founderImg) {
-              founderImg.src = settings.founderPhotoPath;
-            }
-          }
+
           if (settings.founderName) {
             const nameEl = document.getElementById('founder-profile-name');
             if (nameEl) nameEl.textContent = settings.founderName;

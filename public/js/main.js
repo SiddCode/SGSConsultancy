@@ -39,9 +39,7 @@ function renderHeader(settings) {
   const headerContainer = document.getElementById('site-header');
   if (!headerContainer) return;
 
-  const logoHtml = (settings && settings.logoPath)
-    ? `<img src="${settings.logoPath}" alt="SGS HR Logo" class="logo-img-header" style="max-height: 2.75rem; width: auto; object-fit: contain; margin-right: 0.75rem; border-radius: 4px;">`
-    : `<div class="logo-icon">SGS</div>`;
+  const logoHtml = `<img src="images/logo_sgs.jpg" alt="SGS HR Logo" class="logo-img-header" style="max-height: 2.75rem; width: auto; object-fit: contain; margin-right: 0.75rem; border-radius: 4px;">`;
 
   headerContainer.innerHTML = `
     <header class="header" id="navbar">
@@ -83,9 +81,7 @@ function renderFooter(settings) {
         <div class="footer-grid">
           <div class="footer-col">
             <a href="index.html" class="logo footer-logo">
-              ${settings && settings.logoPath
-                ? `<img src="${settings.logoPath}" alt="SGS HR Logo" style="max-height: 2.75rem; width: auto; object-fit: contain; margin-right: 0.75rem; border-radius: 4px;">`
-                : `<div class="logo-icon">SGS</div>`}
+              <img src="images/logo_sgs.jpg" alt="SGS HR Logo" style="max-height: 2.75rem; width: auto; object-fit: contain; margin-right: 0.75rem; border-radius: 4px;">
               <div>
                 <div class="logo-text">SGS HR</div>
                 <span class="logo-subtext">Workforce Solutions</span>
